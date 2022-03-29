@@ -1,0 +1,11 @@
+{:paths ["src"]
+ :deps {org.clojure/clojure {:mvn/version "1.5.1"}
+        org.clojure/tools.namespace {:mvn/version "1.1.0"}
+        org.clojure/java.classpath {:mvn/version "1.0.0"}}
+ :aliases
+ {:dev {:extra-deps {commons-io/commons-io {:mvn/version "2.6"}}}
+  :1.6 {:extra-deps {org.clojure/clojure {:mvn/version "1.6.0"}}}
+  :1.7 {:extra-deps {org.clojure/clojure {:mvn/version "1.7.0"}}}
+  :1.8 {:extra-deps {org.clojure/clojure {:mvn/version "1.8.0"}}}
+  :1.9 {:extra-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
+  :1.10 {:extra-deps {org.clojure/clojure {:mvn/version "1.10.0"}}}}}
