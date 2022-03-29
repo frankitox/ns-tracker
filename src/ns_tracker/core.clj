@@ -6,7 +6,7 @@
             [clojure.set :refer [union]]
             [clojure.tools.namespace.file :refer [clojure-file?]]
             [clojure.tools.namespace.parse :refer [read-ns-decl]]
-            [ns-tracker.dependency :refer [graph seq-union depend dependents remove-key]]
+            [ns-tracker.dependency :refer [graph seq-union depend depends? dependents remove-key]]
             [ns-tracker.nsdeps :refer [deps-from-ns-decl]]
             [ns-tracker.parse :refer [read-in-ns-decl]]))
 
@@ -74,9 +74,17 @@
       (add-to-dep-graph new-decls dirs)))
 
 (defn- affected-namespaces [changed-namespaces old-dependency-graph]
-  (apply seq-union changed-namespaces
-         (map #(dependents old-dependency-graph %)
-              changed-namespaces)))
+  (loop [visited? #{}
+         affected-names []
+         new-names changed-namespaces]
+    (if-let [new-name (first new-names)]
+      (if (visited? new-name)
+        (recur visited? affected-names (rest new-names))
+        (recur
+          (conj visited? new-name)
+          (conj affected-names new-name)
+          (concat new-names (ns-tracker.dependency/close-dependents old-dependency-graph new-name))))
+      affected-names)))
 
 (defn- make-file [f]
   {:pre [(or (string? f) (file? f))]}

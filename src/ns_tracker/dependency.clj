@@ -24,6 +24,11 @@
        (mapcat (partial get m) new-deps))
       acc)))
 
+(defn dependents-1
+  "Returns the set of all things which depend upon x, only directly."
+  [graph x]
+  (get (:dependents graph) x))
+
 (defn dependencies
   "Returns the set of all things x depends on, directly or transitively."
   [graph x]
@@ -44,6 +49,16 @@
   "True if y is a dependent of x."
   [graph x y]
   (some #(= y %) (dependents graph x)))
+
+(defn close-dependents
+  [graph x]
+  (let [dependents (dependents-1 graph x)]
+    (if (= 1 (count dependents))
+      dependents
+      (->> dependents
+           (remove (fn [ns]
+                     (some #(depends? graph ns %) (disj dependents ns))))
+           (set)))))
 
 (defn- add-relationship [graph key x y]
   (update-in graph [key x] union #{y}))
